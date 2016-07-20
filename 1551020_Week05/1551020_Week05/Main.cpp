@@ -1,3 +1,7 @@
+// Vo Tran Thanh Luong
+//1551020
+// Week 05
+
 #include "Function.h"
 #include <iostream>
 using namespace std;
