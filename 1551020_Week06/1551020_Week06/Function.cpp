@@ -16,8 +16,8 @@ node* AVLtree::rotateLeft(node* x) {
 	node* z = y->left;
 	y->left = x;
 	x->right = z;
-	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
 	x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
 	return y;
 }
 node* AVLtree::rotateRight(node* x) {
@@ -27,7 +27,6 @@ node* AVLtree::rotateRight(node* x) {
 	x->left = z;
 	x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
 	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
-	
 	return y;
 }
 int AVLtree::checkBalance(node* N) {
@@ -90,4 +89,71 @@ void AVLtree::printPostorder(node* N) {
 		printPostorder(N->right);
 		cout << N->key << "/" << N->height << "    ";
 	}
+}
+node* AVLtree::Delete(node* N, int key) {
+	if (N == NULL) {
+		return N;
+	}
+	if (key < N->key) {
+		N->left = Delete(N->left, key);
+	}
+	else if (key > N->key) {
+		N->right = Delete(N->right, key);
+	}
+	else { // 1 con hoac 0 con
+		if (N->left == NULL || N->right == NULL) {
+			node* temp = NULL;
+			if (N->left == NULL) {
+				temp = N->right;
+			}
+			else if (N->right == NULL) {
+				temp = N->left;
+			}
+			else temp = NULL;
+			if (temp == NULL) { // 0 con
+				temp = N;
+				N = NULL;
+			}
+			else {
+				N->key = temp->key; // 1 con
+				N->height = temp->height;
+				N->left = temp->left;
+				N->right = temp->right;
+			}
+			delete temp;
+		}
+		else { // 2 con
+			node* temp = findSmallestRightNode(N->right);
+			N->key = temp->key;
+			N->right = Delete(N->right, temp->key);
+		}
+	}
+	if (N == NULL) { // nguyen cay chi co 1 node
+		return N;
+	}
+	N->height = max(getHeight(N->left), getHeight(N->right)) + 1;
+	int balance = checkBalance(N);
+	if (balance > 1 && checkBalance(N->left) >= 0) {
+		return rotateRight(N);
+	}
+	if (balance < -1 && checkBalance(N->right) <= 0) {
+		return rotateLeft(N);
+	}
+	if (balance > 1 && checkBalance(N->left) < 0) {
+		N->left = rotateLeft(N->left);
+		return rotateRight(N);
+	}
+	if (balance < -1 && checkBalance(N->right) >0) {
+		N->right = rotateRight(N->right);
+		return rotateLeft(N);
+	}
+	return N;
+}
+
+node* AVLtree::findSmallestRightNode(node* N) {
+	node* current = N;
+	while (current->left != NULL) {
+		current = current->left;
+	}
+	return current;
 }

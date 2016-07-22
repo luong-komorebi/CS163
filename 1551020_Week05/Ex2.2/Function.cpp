@@ -26,8 +26,9 @@ node* AVLtree::rotateRight(node* x) {
 	node* z = y->right;
 	y->right = x;
 	x->left = z;
-	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
 	x->height = max(getHeight(x->left), getHeight(x->right)) + 1;
+	y->height = max(getHeight(y->left), getHeight(y->right)) + 1;
+	
 	return y;
 }
 int AVLtree::checkBalance(node* N) {
